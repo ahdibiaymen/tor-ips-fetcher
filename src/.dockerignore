@@ -1,0 +1,9 @@
+.idea
+.env
+.env.prod
+venv
+Dockerfile
+*.iml
+.pytest_cache
+__pycache__
+tests/__init__.pyc

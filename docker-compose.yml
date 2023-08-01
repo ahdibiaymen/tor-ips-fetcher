@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  db_spacex:
+    container_name: "postgres_db_spacex"
+    image: postgres:12
+    restart: always
+    env_file:
+      - ./postgres/.env.${MODE}
+    volumes:
+      - ./postgres/db-data:/var/lib/postgresql/data
+    ports:
+      - 5437:5432
+  app:
+    container_name: "flask_app"
+    restart: always
+    build: ./src
+    env_file:
+      - .env.prod
+    environment:
+      PYTHONPATH: "app/src"
+    ports:
+      - 8000:8000
+    depends_on:
+      - db_spacex
+    command: >
+      sh -c "cd ../ && uwsgi --http 0.0.0.0:8000 --master -p 4 -w wsgi:app"

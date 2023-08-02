@@ -11,7 +11,7 @@ RUN apk add --no-cache gcc musl-dev linux-headers \
 && pip install --no-cache-dir -r requirements.txt \
 && pip install uwsgi
 
-COPY . .
+COPY src .
 RUN mv wsgi.py ../
 
 

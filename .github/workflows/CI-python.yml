@@ -14,21 +14,17 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     # Service containers to run with `container-job`
+    env:
+      POSTGRES_USER: ${{secrets.POSTGRESQL_DB_USER}}
+      POSTGRES_PASSWORD: ${{secrets.POSTGRESQL_DB_PASSWD}}
+      POSTGRES_DB: ${{secrets.POSTGRESQL_DB_NAME}}
+      ACTIONS_RUNNER_DEBUG: true
     services:
       # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRESQL_DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRESQL_DB_PASSWD }}
-          POSTGRES_DB: ${{ secrets.POSTGRESQL_DB_NAME }}
-        # Set health checks to wait until postgres has started
         options:
           --health-cmd pg_isready
           --health-interval 10s

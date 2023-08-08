@@ -15,16 +15,15 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Service containers to run with `container-job`
-    env:
-      POSTGRES_USER: ${{secrets.POSTGRESQL_DB_USER}}
-      POSTGRES_PASSWORD: ${{secrets.POSTGRESQL_DB_PASSWD}}
-      POSTGRES_DB: ${{secrets.POSTGRESQL_DB_NAME}}
-      ACTIONS_RUNNER_DEBUG: true
+    container : ubuntu
     services:
       # Label used to access the service container
-      postgres:
+      postgres-db:
         image: postgres
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: postgres
+          POSTGRES_DB: tor_ip
         options:
           --health-cmd pg_isready
           --health-interval 10s
@@ -37,22 +36,6 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.9"
-
-      - name: Create .env file
-        run: |
-          echo "Creating .env from .env.sample..."
-          cp .env.sample .env
-
-      - name: Load secrets
-        run: |
-          sed -i 's/DEBUG=/DEBUG=your_db_host/' .env
-          sed -i 's/POSTGRESQL_DB_NAME=/POSTGRESQL_DB_NAME=${{secrets.POSTGRESQL_DB_NAME}}/' .env
-          sed -i 's/POSTGRESQL_DB_ENGINE=/POSTGRESQL_DB_ENGINE=${{secrets.POSTGRESQL_DB_ENGINE}}/' .env
-          sed -i 's/POSTGRESQL_DB_USER=/POSTGRESQL_DB_USER=${{secrets.POSTGRESQL_DB_USER}}/' .env
-          sed -i 's/POSTGRESQL_DB_PASSWD=/POSTGRESQL_DB_PASSWD=${{secrets.POSTGRESQL_DB_PASSWD}}/' .env
-          sed -i 's/POSTGRESQL_DB_HOST=/POSTGRESQL_DB_HOST=${{secrets.POSTGRESQL_DB_HOST}}/' .env
-          sed -i 's/POSTGRESQL_DB_PORT=/POSTGRESQL_DB_PORT=${{secrets.POSTGRESQL_DB_PORT}}/' .env
-          echo ".env file created"
 
       - name: Install dependencies
         run: |
@@ -80,3 +63,9 @@ jobs:
       - name: Test with pytest
         run: |
           pytest
+        env:
+          POSTGRESQL_DB_PASSWD: test_password
+          POSTGRESQL_DB_USER: postgres
+          POSTGRESQL_DB_HOST: postgres-db
+          POSTGRESQL_DB_PORT: 5432
+          POSTGRESQL_DB_NAME: tor_ip

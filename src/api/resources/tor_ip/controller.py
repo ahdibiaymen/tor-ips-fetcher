@@ -13,7 +13,7 @@ from src.api.resources.tor_ip.service import TorIpService
 torip_ns = NAMESPACES["Torip"]
 
 
-@torip_ns.route("")
+@torip_ns.route("", "/")
 class Torip(Resource):
     """External Tor ips endpoint"""
 

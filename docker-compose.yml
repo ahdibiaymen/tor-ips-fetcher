@@ -5,7 +5,7 @@ services:
     image: postgres:12
     restart: always
     env_file:
-      - ./postgres/.env.${MODE}
+      - ./postgres/.env
     volumes:
       - ./postgres/db-data:/var/lib/postgresql/data
     ports:

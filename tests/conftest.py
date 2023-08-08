@@ -13,7 +13,6 @@ load_dotenv(dotenv_path=os.path.join(BASE_DIR, "../.env"))
 def client():
     app = create_app()
     app.config["TESTING"] = True
-    app.testing = True
     with app.test_client() as client:
         with app.app_context():
             yield client

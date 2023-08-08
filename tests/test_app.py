@@ -20,14 +20,14 @@ def test_exclude_list():
     a = [1, 3, 9, 12]
     b = [2, 3, 9, 14]
     diff = exclude_list(a, b)
-    assert set(diff) == set([1, 12])
+    assert set(diff) == {1, 12}
 
 
 def test_exclude_list2():
     a = [1, 3, 9, 12]
     b = []
     diff = exclude_list(a, b)
-    assert set(diff) == set([1, 3, 9, 12])
+    assert set(diff) == {1, 3, 9, 12}
 
 
 def test_exclude_same_list():
@@ -41,4 +41,4 @@ def test_exclude_empty_list():
     a = []
     b = []
     diff = exclude_list(a, b)
-    assert set(diff) == ([])
+    assert set(diff) == set([])

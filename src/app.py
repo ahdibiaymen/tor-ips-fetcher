@@ -20,4 +20,3 @@ def create_app():
     register_endpoints_routes(apix)
 
     return app
-

@@ -3,17 +3,17 @@ from src.utils import exclude_list, is_valid_ip
 
 def test_check_bad_ip():
     ip = "ashfdsqf"
-    assert is_valid_ip(ip) == False
+    assert is_valid_ip(ip) is False
 
 
 def test_check_bad_ip2():
     ip = "10.192.2.1223"
-    assert is_valid_ip(ip) == False
+    assert is_valid_ip(ip) is False
 
 
 def test_check_valid_ip():
     ip = "10.192.2.12"
-    assert is_valid_ip(ip) == True
+    assert is_valid_ip(ip) is True
 
 
 def test_exclude_list():

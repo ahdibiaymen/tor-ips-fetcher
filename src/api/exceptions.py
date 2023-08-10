@@ -36,3 +36,11 @@ class RemoteURLContentChanged(Exception):
         if errors:
             self.message += f": {errors}"
         super().__init__(self.message)
+
+
+class NotFound(Exception):
+    def __init__(self, **errors):
+        self.message = "Resource not found"
+        if errors:
+            self.message += f": {errors}"
+        super().__init__(self.message)

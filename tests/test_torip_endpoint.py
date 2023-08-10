@@ -1,3 +1,6 @@
+import pytest
+
+from src.api.resources.tor_ip.service import TorIpService
 from src.default_config import DefaultConfig
 from src.models import ExcludedTorIp
 
@@ -13,6 +16,17 @@ def delete_test_inserts(ips):
 def test_app_healthiness(client):
     response = client.get("", follow_redirects=True)
     assert response.status_code == 200
+
+
+@pytest.fixture
+def create_test_excluded_ips():
+    # set up
+    ips = ("10.10.123.2", "10.10.123.3")
+    for ip in ips:
+        TorIpService.exclude_new_ip(ip)
+    yield ips
+    # tear down
+    delete_test_inserts(["10.10.123.2", "10.10.123.3"])
 
 
 # unallowed endpoint methods
@@ -64,7 +78,7 @@ def test_POST_torip_endpoint_valid(client):
 
 
 # already exists
-def test_POST_torip_endpoint_alreay_exists(client):
+def test_POST_torip_endpoint_already_exists(client):
     data = {"ip": "10.10.123.2"}
     response = client.post(
         DefaultConfig.PREFIX_PATH + "/tor_ip/excluded", query_string=data
@@ -100,3 +114,29 @@ def test_GET_torip_endpoint_EXCLUDED(client):
 
     # deleting test instances
     delete_test_inserts(["10.10.123.2", "10.10.123.3"])
+
+
+def test_DELETE_torip_endpoint_NOT_FOUND(client, create_test_excluded_ips):
+    data = {"ip": "10.10.12.3"}
+    response = client.delete(
+        DefaultConfig.PREFIX_PATH + "/tor_ip/excluded", query_string=data
+    )
+    assert response.status_code == 404
+
+
+def test_DELETE_torip_endpoint_EXCLUDED_SUCCESS(
+    client, create_test_excluded_ips
+):
+    excluded_ips = create_test_excluded_ips
+    # restoring one ip from exclusion
+    data = {"ip": excluded_ips[0]}
+    response = client.delete(
+        DefaultConfig.PREFIX_PATH + "/tor_ip/excluded", query_string=data
+    )
+    assert response.status_code == 200
+
+    # fetching data
+    response = client.get(DefaultConfig.PREFIX_PATH + "/tor_ip/excluded")
+    assert response.status_code == 200
+    assert "tor_ips" in response.json
+    assert excluded_ips[0] not in set(response.json.get("tor_ips"))

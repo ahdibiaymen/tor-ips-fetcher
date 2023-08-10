@@ -45,13 +45,11 @@ jobs:
 
       - name: Python Isort
         run: |
-          isort --profile black --skip-gitignore --line-length 90 src/
-          isort --profile black --skip-gitignore --line-length 90 tests/
+          isort --profile black --line-length 90 .
 
       - name: Python Black
         run: |
-          black --line-length=90 --preview src/
-          black --line-length=90 --preview tests/
+          black --line-length=90 --preview .
 
       - name: Lint with flake8
         run: |

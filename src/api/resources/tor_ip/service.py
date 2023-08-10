@@ -9,6 +9,18 @@ from src.utils import exclude_list, is_valid_ip
 
 class TorIpService:
     @classmethod
+    def restore_new_ip(cls, ip):
+        """EXCLUDE IP ADDRESS FROM RESULTS"""
+        if not ip:
+            raise exceptions.ValidationError(ip="NULL")
+        if not is_valid_ip(ip):
+            raise exceptions.ValidationError(ip=ip, reason="INVALID_IP")
+        if not ExcludedTorIp.get_one_ip(ip):
+            raise exceptions.NotFound(ip=ip, reason="IP_NOT_FOUND")
+
+        ExcludedTorIp.delete_one_ip(ip)
+
+    @classmethod
     def exclude_new_ip(cls, ip):
         """EXCLUDE IP ADDRESS FROM RESULTS"""
         if not ip:

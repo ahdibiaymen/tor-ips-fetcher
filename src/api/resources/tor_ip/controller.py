@@ -25,18 +25,18 @@ class Torip(Resource):
     def get(self):
         """retrieve external tor ips (UNIQUE) list"""
         try:
-            torip_list = TorIpService().retrieve_torip_list()
+            torip_list = TorIpService.retrieve_torip_list()
             return {"tor_ips": torip_list}
         except exceptions.RemoteURLContentChanged as e:
             torip_ns.logger.error(
-                "The following Exception occurred while calling this URI:"
-                f" '{request.url}' : {e}"
+                "The following Exception occurred while requesting this"
+                f" endpoint: '{request.url}' : {e}"
             )
             abort(404, "Remote address is blocking scrappers")
-        except (exceptions.BadRemoteURL, Exception) as e:
+        except exceptions.BadRemoteURL as e:
             torip_ns.logger.error(
-                "The following Exception occurred while calling this URI:"
-                f" '{request.url}' : {e}"
+                "The following Exception occurred while requesting this"
+                f" endpoint: '{request.url}' : {e}"
             )
             abort(500, "Internal Server Error")
 
@@ -53,7 +53,7 @@ class ToripExcluded(Resource):
         """Add new tor ip to the existing excluded ip addresses"""
         args = torip_parser.parse_args(strict=True)
         try:
-            TorIpService().exclude_new_ip(args.get("ip"))
+            TorIpService.exclude_new_ip(args.get("ip"))
             http_response = {
                 "message": "IP_EXCLUDED",
                 "status": "success",
@@ -62,11 +62,38 @@ class ToripExcluded(Resource):
         except exceptions.ValidationError:
             abort(400, "BAD_IP_ADDRESS")
         except exceptions.AlreadyExists:
-            abort(409, "URL_ALREADY_EXCLUDED")
-        except (exceptions.DBError, Exception) as e:
+            abort(409, "IP_ALREADY_EXCLUDED")
+        except exceptions.DBError as e:
             torip_ns.logger.error(
-                "The following Exception occurred while calling this URI:"
-                f" '{request.url}' : {e}"
+                "The following Exception occurred while requesting this"
+                f" endpoint: '{request.url}' : {e}"
+            )
+            abort(500, "Internal Server Error")
+
+    @torip_ns.marshal_with(torip_standard_serializer)
+    @torip_ns.expect(torip_parser, validate=True)
+    @torip_ns.response(200, "Restored")
+    @torip_ns.response(400, "Bad request")
+    @torip_ns.response(404, "Not Found")
+    @torip_ns.response(500, "Internal Server Error")
+    def delete(self):
+        """delete an existing tor ip excluded ip address"""
+        args = torip_parser.parse_args(strict=True)
+        try:
+            TorIpService.restore_new_ip(args.get("ip"))
+            http_response = {
+                "message": "IP_RESTORED",
+                "status": "success",
+            }
+            return http_response, 200
+        except exceptions.ValidationError:
+            abort(400, "BAD_IP_ADDRESS")
+        except exceptions.NotFound:
+            abort(404, "IP_NOT_FOUND")
+        except exceptions.DBError as e:
+            torip_ns.logger.error(
+                "The following Exception occurred while requesting this"
+                f" endpoint: '{request.url}' : {e}"
             )
             abort(500, "Internal Server Error")
 
@@ -77,11 +104,11 @@ class ToripExcluded(Resource):
     def get(self):
         """retrieve all excluded ip list"""
         try:
-            excluded_torip_list = TorIpService().retrieve_excluded_ip_list()
+            excluded_torip_list = TorIpService.retrieve_excluded_ip_list()
             return {"tor_ips": excluded_torip_list}
-        except (exceptions.DBError, Exception) as e:
+        except exceptions.DBError as e:
             torip_ns.logger.error(
-                "The following Exception occurred while calling this URI:"
-                f" '{request.url}' : {e}"
+                "The following Exception occurred while requesting this"
+                f" endpoint: '{request.url}' : {e}"
             )
             abort(500, "Internal Server Error")

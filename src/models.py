@@ -57,5 +57,21 @@ class ExcludedTorIp(BaseModel):
         ip_list = [excluded.ip for excluded in query]
         return ip_list
 
+    @classmethod
+    def get_one_ip(cls, ip):
+        retrieved_ip = (
+            ExcludedTorIp.select().where(ExcludedTorIp.ip == ip).first()
+        )
+        if not retrieved_ip:
+            return False
+        return retrieved_ip
+
+    @classmethod
+    def delete_one_ip(cls, ip):
+        try:
+            ExcludedTorIp.delete().where(ExcludedTorIp.ip == ip).execute()
+        except Exception as e:
+            raise exceptions.DBError(table="tor_ip", ip=ip, reason=e)
+
 
 pg_db.create_tables([ExcludedTorIp])

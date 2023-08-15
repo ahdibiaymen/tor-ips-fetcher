@@ -58,7 +58,7 @@ class DefaultConfig:
                 "file": {
                     "level": "INFO",
                     "class": "logging.handlers.RotatingFileHandler",
-                    "filename": "/tmp/spacex_torip.log",
+                    "filename": "/tmp/torip-api.log",
                     "mode": "a",
                     "maxBytes": 10485760,
                     "backupCount": 10,

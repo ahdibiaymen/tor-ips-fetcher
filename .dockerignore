@@ -1,0 +1,8 @@
+.github
+.git
+.pytest_cache
+__pycache__
+dist
+postgres
+tests
+.idea

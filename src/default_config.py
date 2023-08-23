@@ -10,6 +10,7 @@ class DefaultConfig:
 
     DEBUG = os.environ.get("DEBUG")
     BUNDLE_ERRORS = True
+    MODE = os.environ.get("MODE")
 
     # api prefix
     PREFIX_PATH = "/{}".format(os.environ.get("DEPLOYMENT_VERSION"))
@@ -28,6 +29,7 @@ class DefaultConfig:
         "host": os.environ.get("POSTGRESQL_DB_HOST"),
         "port": os.environ.get("POSTGRESQL_DB_PORT"),
     }
+    DATABASE_URL = os.environ.get("DATABASE_URL")
 
     UDGER_URL = "https://udger.com/resources/ip-list/tor_exit_node"
     DAN_URL = "https://www.dan.me.uk/tornodes"

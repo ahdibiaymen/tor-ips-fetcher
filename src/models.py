@@ -4,22 +4,26 @@ import peewee
 from dotenv import load_dotenv
 
 from src.api import exceptions
+from src.default_config import DefaultConfig
+from playhouse.db_url import connect
 
 # load .env configuration
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(dotenv_path=os.path.join(BASE_DIR, "../.env"))
 
 # database connection
-pg_db = peewee.PostgresqlDatabase(
-    database=os.environ.get("POSTGRESQL_DB_NAME"),
-    user=os.environ.get("POSTGRESQL_DB_USER"),
-    password=os.environ.get("POSTGRESQL_DB_PASSWD"),
-    host=os.environ.get("POSTGRESQL_DB_HOST"),
-    port=os.environ.get("POSTGRESQL_DB_PORT"),
-    autorollback=True,
-)
-
-pg_db.connect(reuse_if_open=True)
+if DefaultConfig.MODE == "prod":
+    pg_db = connect(os.environ.get("DATABASE_URL"))
+else:  # dev
+    pg_db = peewee.PostgresqlDatabase(
+        database=os.environ.get("POSTGRESQL_DB_NAME"),
+        user=os.environ.get("POSTGRESQL_DB_USER"),
+        password=os.environ.get("POSTGRESQL_DB_PASSWD"),
+        host=os.environ.get("POSTGRESQL_DB_HOST"),
+        port=os.environ.get("POSTGRESQL_DB_PORT"),
+        autorollback=True,
+    )
+    pg_db.connect(reuse_if_open=True)
 
 
 class BaseModel(peewee.Model):

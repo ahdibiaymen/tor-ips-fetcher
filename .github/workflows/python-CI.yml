@@ -2,17 +2,17 @@ name: CI-Python
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main","develop","release/**","feature/**" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main","develop","release/**","feature/**" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    container : ubuntu
+    container: ubuntu
     services:
       # Label used to access the service container
       postgres-db:
